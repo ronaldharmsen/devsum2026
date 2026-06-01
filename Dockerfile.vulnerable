@@ -1,0 +1,18 @@
+# ============================================================
+# DEMO: Vulnerable Dockerfile (.NET 6 - end of life!)
+# DO NOT use in production - intentionally insecure!
+# ============================================================
+# .NET 6 went end-of-life in November 2024.
+# No more security patches. Known CVEs. Full SDK in prod.
+# ============================================================
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+WORKDIR /app
+COPY dotnet/ .
+RUN dotnet publish DevSumDemo-legacy.csproj -o /out
+# Copy the data folder to the publish output (for the /download endpoint)
+RUN cp -r data /out/data || true
+WORKDIR /out
+# .NET 6 defaults to port 5000 - override to 8080 for consistency
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "DevSumDemo.dll"]
